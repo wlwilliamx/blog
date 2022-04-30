@@ -4,7 +4,7 @@ blog_theme: light # Or use dark
 name: wlwilliamx
 paginate: 25
 url: https://wlwilliamx.github.io/blog/
-baseurl: https://wlwilliamx.github.io/blog/
+baseurl: blog/
 
 
 # Optional settings
