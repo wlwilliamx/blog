@@ -9,9 +9,9 @@
 
 $black: #000;
 $gray-darkest: #121111;
-$gray-darker: lighten($gray-darkest, 15);
-$gray-dark: lighten($gray-darkest, 30);
-$gray: lighten($gray-darkest, 45);
+$gray-darker: lighten($gray-darkest, 10);
+$gray-dark: lighten($gray-darkest, 25);
+$gray: lighten($gray-darkest, 40);
 $gray-light: lighten($gray-darkest, 60);
 $gray-lighter: lighten($gray-darkest, 75);
 $gray-lightest: lighten($gray-darkest, 85);
