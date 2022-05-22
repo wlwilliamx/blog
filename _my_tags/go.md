@@ -1,4 +1,0 @@
----
-slug: go
-name: Go
----

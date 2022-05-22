@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>wlwilliamx | Go Timer 详解以及 Reset 和 Stop 的详细用法</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="Go Timer 详解以及 Reset 和 Stop 的详细用法">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://wlwilliamx.github.io/posts/go-timer-%E8%AF%A6%E8%A7%A3%E4%BB%A5%E5%8F%8A-reset-%E5%92%8C-stop-%E7%9A%84%E8%AF%A6%E7%BB%86%E7%94%A8%E6%B3%95">
+  <meta property="og:description" content="">
+  <meta property="og:site_name" content="wlwilliamx">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="https://wlwilliamx.github.io/posts/go-timer-%E8%AF%A6%E8%A7%A3%E4%BB%A5%E5%8F%8A-reset-%E5%92%8C-stop-%E7%9A%84%E8%AF%A6%E7%BB%86%E7%94%A8%E6%B3%95">
+  <meta name="twitter:title" content="Go Timer 详解以及 Reset 和 Stop 的详细用法">
+  <meta name="twitter:description" content="">
+
+  
+    <meta property="og:image" content="https://wlwilliamx.github.io/assets/og-image-ee46bbc61b334e821e81534b1fd43f3fee6f020ec174b3c2114445695fd48c01.jpg">
+    <meta name="twitter:image" content="https://wlwilliamx.github.io/assets/og-image-ee46bbc61b334e821e81534b1fd43f3fee6f020ec174b3c2114445695fd48c01.jpg">
+  
+
+  <link href="https://wlwilliamx.github.io/feed.xml" type="application/rss+xml" rel="alternate" title="wlwilliamx Last 10 blog posts" />
+
+  
+
+  
+
+    
+      <link rel="icon" type="image/x-icon" href="/assets/favicon-light-f354e0daeaef2e32d2ed16bc7d6a728a8f12b7be9073441fd0d26713d52d61b4.ico">
+      <link rel="apple-touch-icon" href="/assets/apple-touch-icon-light-c9faf175fd32ff284ae4a1f7d8ee67188a6b39fe52e94ff77327a2066476f658.png">
+      <link rel="stylesheet" type="text/css" href="/assets/light-15f5469575d1be6619b36ea778855e184a7b76604827407328401d90698868be.css">
+    
+
+  
+
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-9MJQ3PQYHC"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-9MJQ3PQYHC');
+  </script>
+  
+
+  
+    <script async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+          inlineMath: [['$','$']]
+        }
+      });
+    </script>
+  
+
+</head>
+
+
+<body>
+    <main>
+        <div class="grid grid-centered">
+            <div class="grid-cell">
+                <nav class="header-nav scrollappear">
+  <a href="/" class="header-logo" title="wlwilliamx">wlwilliamx</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="/about" title="About me">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-about">
+  <use href="/assets/about-ecf154b571ab8034ae00aeed91a3b7ad68db80b46d958753ad6216c919486e88.svg#icon-about" xlink:href="/assets/about-ecf154b571ab8034ae00aeed91a3b7ad68db80b46d958753ad6216c919486e88.svg#icon-about"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="https://github.com/wlwilliamx" rel="noreferrer noopener" target="_blank" title="GitHub">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-github">
+  <use href="/assets/github-094f81040819f34343ee6ffff0980f17e2807b08b595eaaf66ae3554934fd78d.svg#icon-github" xlink:href="/assets/github-094f81040819f34343ee6ffff0980f17e2807b08b595eaaf66ae3554934fd78d.svg#icon-github"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:wlwilliamx@gmail.com" title="Email">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-email">
+  <use href="/assets/email-782473193bf750036fdb90e8daa075508a20509d01854c09f3237c144a3f0601.svg#icon-email" xlink:href="/assets/email-782473193bf750036fdb90e8daa075508a20509d01854c09f3237c144a3f0601.svg#icon-email"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" rel="noreferrer noopener" target="_blank" title="RSS">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-rss">
+  <use href="/assets/rss-541ec5cea9cefd10d2fcfec01888f3f231a8829940249835fa7b7b3a12ae0d0d.svg#icon-rss" xlink:href="/assets/rss-541ec5cea9cefd10d2fcfec01888f3f231a8829940249835fa7b7b3a12ae0d0d.svg#icon-rss"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+  </ul>
+</nav>
+
+
+  <ul class="header-tags scrollappear">
+    
+    
+      
+        <li><a href="/tag/go">Go</a></li>
+    
+      
+        <li><a href="/tag/linux">Linux</a></li>
+    
+      
+        <li><a href="/tag/内核">内核</a></li>
+    
+      
+        <li><a href="/tag/算法">算法</a></li>
+    
+  </ul>
+
+
+                <article class="article scrollappear">
+                    <header class="article-header">
+                        <h1>Go Timer 详解以及 Reset 和 Stop 的详细用法</h1>
+                        <p></p>
+                        <div class="article-list-footer">
+  <span class="article-list-date">
+    March 26, 2022
+  </span>
+  <span class="article-list-divider">-</span>
+  <span class="article-list-minutes">
+    
+    
+      3 minute read
+    
+  </span>
+  <span class="article-list-divider">-</span>
+  <div class="article-list-tags">
+    
+      
+      <a href="/tag/go" title="See all posts with tag 'Go'">Go</a>
+    
+  </div>
+</div>
+                    </header>
+
+                    <div class="article-content">
+                        <ul><li><a href="#timetimer">time.Timer</a><ul><li><a href="#timer-的底层原理">Timer 的底层原理</a></li><li><a href="#timenewtimer-创建-timer">time.NewTimer() 创建 Timer</a></li><li><a href="#stop-中止-timer">Stop() 中止 Timer</a></li><li><a href="#reset-重置-timer">Reset() 重置 Timer</a></li><li><a href="#timeafterfunc-创建-timer">time.AfterFunc() 创建 Timer</a></li></ul></li><li><a href="#参考资料">参考资料</a></li></ul>
+                        <p>Go 的 Timer 计时器由于机制的原因导致在并发编程中容易出现错误或者 bug，但是只要了解清楚了其工作原理，就知道如何避免产生错误了。</p>
+
+<h2 id="timetimer">time.Timer</h2>
+
+<p>Timer 是 Go 中 <code class="highlighter-rouge">time</code> 包里的一种一次性计时器，它的作用是定时触发事件，在触发之后这个 Timer 就会失效，需要调用 <code class="highlighter-rouge">Reset()</code> 来让这个 Timer 重新生效。</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="k">type</span> <span class="n">Timer</span> <span class="k">struct</span> <span class="p">{</span>
+	<span class="n">C</span> <span class="o">&lt;-</span><span class="k">chan</span> <span class="n">Time</span>
+	<span class="c">// contains filtered or unexported fields</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>这个是 Timer 类型的结构体，其中只有一个 channel 可供外部访问，这个 channel 的作用就是在定时结束结束之后，会发送当前时间到这个 channel 里面，所以在 channel 收到值的时候，就等于计时器超时了，可以执行定时的事件了。所以一般是和 <code class="highlighter-rouge">select</code> 语句搭配使用。</p>
+
+<h3 id="timer-的底层原理">Timer 的底层原理</h3>
+
+<p>在一个 Go 程序中，其中的所有计时器都是由一个运行着 <code class="highlighter-rouge">timerproc()</code> 函数的 goroutine 来维护。它采用了时间堆的算法来维护所有的 Timer，其底层的数据结构是基于数组的小根堆，堆顶的元素是距离超时最近的 Timer，这个 goroutine 会定期 wake up，读取堆顶的 Timer，执行对应的 <code class="highlighter-rouge">f</code> 函数或者 send time，然后将其从堆顶移除。</p>
+
+<h3 id="timenewtimer-创建-timer">time.NewTimer() 创建 Timer</h3>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="k">func</span> <span class="n">NewTimer</span><span class="p">(</span><span class="n">d</span> <span class="n">Duration</span><span class="p">)</span> <span class="o">*</span><span class="n">Timer</span></code></pre></figure>
+
+<p><code class="highlighter-rouge">time.NewTimer()</code> 是创建 Timer 的其中一种方式，通过传入一个定时时间 <code class="highlighter-rouge">d</code>，<code class="highlighter-rouge">time.NewTimer()</code> 就会返回创建的 Timer 的指针，这个 Timer 会在经过 <code class="highlighter-rouge">d</code> 这么长的时间时间之后，向 Timer 中的 channel 发送当前时间。</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="n">timer</span> <span class="o">:=</span> <span class="n">time</span><span class="o">.</span><span class="n">NewTimer</span><span class="p">(</span><span class="m">5</span> <span class="o">*</span> <span class="n">time</span><span class="o">.</span><span class="n">Minute</span><span class="p">)</span>
+<span class="k">select</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="o">&lt;-</span><span class="n">timer</span><span class="o">.</span><span class="n">C</span><span class="o">:</span>
+       <span class="n">fmt</span><span class="o">.</span><span class="n">Println</span><span class="p">(</span><span class="s">"timed out"</span><span class="p">)</span>
+    <span class="k">default</span><span class="o">:</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>在 Timer 超时之后，<code class="highlighter-rouge">select</code> 就会收到 channel 里发送的值，这样就可以往下执行定时事件了。</p>
+
+<h3 id="stop-中止-timer">Stop() 中止 Timer</h3>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="k">func</span> <span class="p">(</span><span class="n">t</span> <span class="o">*</span><span class="n">Timer</span><span class="p">)</span> <span class="n">Stop</span><span class="p">()</span> <span class="kt">bool</span></code></pre></figure>
+
+<p><code class="highlighter-rouge">Stop()</code> 是 Timer 的成员函数，调用 <code class="highlighter-rouge">Stop()</code> 方法，会中止这个 Timer 的计时，使其失效，之后是不会触发定时事件的。</p>
+
+<p>调用 <code class="highlighter-rouge">Stop()</code> 方法之后，会将这个 Timer 从时间堆里移除，如果这个 Timer 还没超时，依然在时间堆中，那么就会被成功移除并且返回 <code class="highlighter-rouge">true</code>；如果这个 Timer 不在时间堆里，说明已经超时了或者已经被 stop 了，这个时候就会返回 <code class="highlighter-rouge">false</code>。</p>
+
+<h3 id="reset-重置-timer">Reset() 重置 Timer</h3>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="k">func</span> <span class="p">(</span><span class="n">t</span> <span class="o">*</span><span class="n">Timer</span><span class="p">)</span> <span class="n">Reset</span><span class="p">(</span><span class="n">d</span> <span class="n">Duration</span><span class="p">)</span> <span class="kt">bool</span></code></pre></figure>
+
+<p><code class="highlighter-rouge">Reset()</code> 是 Timer 里的另一个成员函数，它的作用是重置这个 Timer。如果这个 Timer 已经超时失效了，那么 <code class="highlighter-rouge">Reset()</code> 会令其重新生效；如果这个 Timer 还没超时，那么 <code class="highlighter-rouge">Reset()</code> 会让其重新计时，并将超时时间设置为 <code class="highlighter-rouge">d</code>。</p>
+
+<p>这里有一个需要<strong>注意</strong>的地方，在官方的 package 文档中，有这么一句话：</p>
+
+<p><em>For a Timer created with NewTimer, Reset should be invoked only on stopped or expired timers with drained channels.</em></p>
+
+<p>意思是调用 <code class="highlighter-rouge">Reset()</code> 之前，一定要保证这个 Timer 已经被 stop 了，或者这个 Timer 已经超时了，并且里面 channel 已经被排空了。</p>
+
+<p>因为，如果这个 Timer 还没超时，但是不去保证这个 Timer 已经被 stop 了，那么旧的 Timer 依然存在时间堆里，并且依然会触发，就会产生意料之外的事。而如果这个 Timer 已经超时了，不在时间堆里了，但是可能是刚刚超时，并且往 channel 里发送了时间，如果不显式排空 channel 的话，那么也会触发超时事件，所以需要显式地排空 channel。</p>
+
+<p>所以正常情况下，<code class="highlighter-rouge">Reset()</code> 要和 <code class="highlighter-rouge">Stop()</code> 一起搭配使用。官方文档里给出了示例：</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="k">if</span> <span class="o">!</span><span class="n">t</span><span class="o">.</span><span class="n">Stop</span><span class="p">()</span> <span class="p">{</span>
+	<span class="o">&lt;-</span><span class="n">t</span><span class="o">.</span><span class="n">C</span>
+<span class="p">}</span>
+<span class="n">t</span><span class="o">.</span><span class="n">Reset</span><span class="p">(</span><span class="n">d</span><span class="p">)</span></code></pre></figure>
+
+<p>这样可以同时保证这个 Timer 已经被 stop 了，或者这个 Timer 已经超时了，但是对 channel 进行了显式排空。</p>
+
+<p>但是这里<strong>存在一个问题</strong>，在正常情况下，如果之前的 Timer 还生效，那么 <code class="highlighter-rouge">Stop()</code> 会返回 <code class="highlighter-rouge">true</code>，不会产生问题；但是如果 Timer 已经超时了，<code class="highlighter-rouge">Stop()</code> 就会返回 <code class="highlighter-rouge">false</code>，而如果 channel 里面没有没有值，那么就会发生<strong>阻塞</strong>，导致程序卡在这里。</p>
+
+<p>所以更好的做法是采用 <code class="highlighter-rouge">select</code>：</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="k">if</span> <span class="o">!</span><span class="n">t</span><span class="o">.</span><span class="n">Stop</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">select</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="o">&lt;-</span><span class="n">t</span><span class="o">.</span><span class="n">C</span><span class="o">:</span> <span class="c">// try to drain the channel</span>
+    <span class="k">default</span><span class="o">:</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="n">t</span><span class="o">.</span><span class="n">Reset</span><span class="p">(</span><span class="n">d</span><span class="p">)</span></code></pre></figure>
+
+<p>这样即使 channel 里面没有值，也不会发生阻塞，有值的话也可以成功排空 channel。</p>
+
+<p>但是，显式排空 channel 并不是绝对的，如果 channel 里面存在值，但是对你想要的结果不会产生任何影响的话，那么不显式排空 channel 也是可以的，直接在 <code class="highlighter-rouge">Reset()</code> 之前调用一次 <code class="highlighter-rouge">Stop()</code> 就行，也不需要对 <code class="highlighter-rouge">Stop()</code> 的返回值进行判断。</p>
+
+<h3 id="timeafterfunc-创建-timer">time.AfterFunc() 创建 Timer</h3>
+
+<p>对于 <code class="highlighter-rouge">time.Timer</code>，还有另一种创建方式：<code class="highlighter-rouge">time.AfterFunc()</code>。（time 包里还有其他几种计时器，这篇文章只讨论 time.Timer 这种计时器）</p>
+
+<figure class="highlight"><pre><code class="language-go" data-lang="go"><span class="k">func</span> <span class="n">AfterFunc</span><span class="p">(</span><span class="n">d</span> <span class="n">Duration</span><span class="p">,</span> <span class="n">f</span> <span class="k">func</span><span class="p">())</span> <span class="o">*</span><span class="n">Timer</span></code></pre></figure>
+
+<p><code class="highlighter-rouge">time.AfterFunc()</code> 与 <code class="highlighter-rouge">time.NewTimer()</code> 相比，参数上多了一个 <code class="highlighter-rouge">f</code>。这是因为 <code class="highlighter-rouge">time.AfterFunc()</code> 创建的 Timer 在超时之后会在一个新的 goroutine 中执行这个 <code class="highlighter-rouge">f</code> 函数，不会向 channel 里面发送值。</p>
+
+<p>之前所讨论的需要 <code class="highlighter-rouge">Stop()</code> 之后显式排空 channel 的情况都是对于 <code class="highlighter-rouge">time.NewTimer()</code> 创建的 Timer 来说，对于 <code class="highlighter-rouge">time.AfterFunc()</code> 来说，由于不会向 channel 里发送值，所以不需要显式排空 channel 的额外操作，但是在 <code class="highlighter-rouge">Reset()</code> 之前还是需要调用 <code class="highlighter-rouge">Stop()</code> 的。</p>
+
+<p>此外，<code class="highlighter-rouge">Stop()</code> 和 <code class="highlighter-rouge">Reset()</code> 的返回值对于 <code class="highlighter-rouge">time.AfterFunc()</code> 创建的 Timer 来说含义与<strong>之前提到的</strong>是不一样的。需要自己视情况而定，看 <code class="highlighter-rouge">f</code> 函数的<strong>执行与否</strong>对结果来说有没有影响，如果有影响，那么就需要额外判断返回值，如果没有影响，直接调用即可。</p>
+
+<hr />
+
+<h2 id="参考资料">参考资料</h2>
+
+<p>[1] <a href="https://tonybai.com/2016/12/21/how-to-use-timer-reset-in-golang-correctly/">论golang Timer Reset方法使用的正确姿势</a></p>
+
+<p>[2] <a href="https://pkg.go.dev/time#Timer">pkg/time</a></p>
+
+<p>[3] <a href="https://blog.gopheracademy.com/advent-2016/go-timers/">How Do They Do It: Timers in Go</a></p>
+
+<p>[4] <a href="https://lifan.tech/2019/10/30/golang/high-performance-timer/">Golang Timer 源码探索及常见问题</a></p>
+
+                    </div>
+                    <div class="article-share">
+                        
+                        
+                        <a href="https://twitter.com/home?status=Go+Timer+%E8%AF%A6%E8%A7%A3%E4%BB%A5%E5%8F%8A+Reset+%E5%92%8C+Stop+%E7%9A%84%E8%AF%A6%E7%BB%86%E7%94%A8%E6%25...%20-%20https://wlwilliamx.github.io/posts/go-timer-%E8%AF%A6%E8%A7%A3%E4%BB%A5%E5%8F%8A-reset-%E5%92%8C-stop-%E7%9A%84%E8%AF%A6%E7%BB%86%E7%94%A8%E6%B3%95"
+                            title="Share on Twitter" rel="noreferrer noopener" target="_blank">
+                            <svg viewBox="0 0 512 512">
+                                <path
+                                    d="M492 109.5c-17.4 7.7-36 12.9-55.6 15.3 20-12 35.4-31 42.6-53.6 -18.7 11.1-39.4 19.2-61.5 23.5C399.8 75.8 374.6 64 346.8 64c-53.5 0-96.8 43.4-96.8 96.9 0 7.6 0.8 15 2.5 22.1 -80.5-4-151.9-42.6-199.6-101.3 -8.3 14.3-13.1 31-13.1 48.7 0 33.6 17.2 63.3 43.2 80.7C67 210.7 52 206.3 39 199c0 0.4 0 0.8 0 1.2 0 47 33.4 86.1 77.7 95 -8.1 2.2-16.7 3.4-25.5 3.4 -6.2 0-12.3-0.6-18.2-1.8 12.3 38.5 48.1 66.5 90.5 67.3 -33.1 26-74.9 41.5-120.3 41.5 -7.8 0-15.5-0.5-23.1-1.4C62.8 432 113.7 448 168.3 448 346.6 448 444 300.3 444 172.2c0-4.2-0.1-8.4-0.3-12.5C462.6 146 479 129 492 109.5z" />
+                            </svg>
+                        </a>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=https://wlwilliamx.github.io/posts/go-timer-%E8%AF%A6%E8%A7%A3%E4%BB%A5%E5%8F%8A-reset-%E5%92%8C-stop-%E7%9A%84%E8%AF%A6%E7%BB%86%E7%94%A8%E6%B3%95"
+                            title="Share on Facebook" rel="noreferrer noopener" target="_blank">
+                            <svg viewBox="0 0 512 512">
+                                <path
+                                    d="M288 192v-38.1c0-17.2 3.8-25.9 30.5-25.9H352V64h-55.9c-68.5 0-91.1 31.4-91.1 85.3V192h-45v64h45v192h83V256h56.4l7.6-64H288z" />
+                            </svg>
+                        </a>
+                    </div>
+
+                    
+                    <div id="disqus_thread" class="article-comments"></div>
+                    <script src="https://https-wlwilliamx-github-io.disqus.com/embed.js" async defer></script>
+                    <noscript>Please enable JavaScript to view the comments.</noscript>
+                    
+                </article>
+                <footer class="footer scrollappear">
+    <p>
+        <!-- Chalk is a high quality, completely customizable, performant and 100% free
+    blog template for Jekyll built by
+    <a href="/about" title="About me">Nielsen Ramon</a>. Download it <a href="https://github.com/nielsenramon/chalk" rel="noreferrer noopener" target="_blank" title="Download Chalk">here</a>. -->
+        Do what you love.
+    </p>
+</footer>
+            </div>
+        </div>
+    </main>
+    <script src="/assets/vendor-734ddaa553ebf4e6ca703bd7c567ef4a0e43b0ba799607355e56b81e88781318.js" type="text/javascript"></script>
+
+
+<script src="/assets/webfonts-96493456d319d1bf419afdf8701552d4d486fee6afd304897d4fd81eb4e0cc0b.js" type="text/javascript"></script>
+
+
+
+<script src="/assets/scrollappear-e2da8ea567e418637e31266cc5302126eaa79f62a2273739086358b589a89ee6.js" type="text/javascript"></script>
+
+
+<script src="/assets/application-cfde13ac81ddaf4351b2e739603e2baf688d0fcc9aba613fe62bbb1c7b037fb9.js" type="text/javascript"></script>
+
+
+</body>
+
+</html>

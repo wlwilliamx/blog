@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>wlwilliamx | 深入理解二分算法</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="深入理解二分算法">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://wlwilliamx.github.io/posts/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E4%BA%8C%E5%88%86%E7%AE%97%E6%B3%95">
+  <meta property="og:description" content="">
+  <meta property="og:site_name" content="wlwilliamx">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="https://wlwilliamx.github.io/posts/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E4%BA%8C%E5%88%86%E7%AE%97%E6%B3%95">
+  <meta name="twitter:title" content="深入理解二分算法">
+  <meta name="twitter:description" content="">
+
+  
+    <meta property="og:image" content="https://wlwilliamx.github.io/assets/og-image-ee46bbc61b334e821e81534b1fd43f3fee6f020ec174b3c2114445695fd48c01.jpg">
+    <meta name="twitter:image" content="https://wlwilliamx.github.io/assets/og-image-ee46bbc61b334e821e81534b1fd43f3fee6f020ec174b3c2114445695fd48c01.jpg">
+  
+
+  <link href="https://wlwilliamx.github.io/feed.xml" type="application/rss+xml" rel="alternate" title="wlwilliamx Last 10 blog posts" />
+
+  
+
+  
+
+    
+      <link rel="icon" type="image/x-icon" href="/assets/favicon-light-f354e0daeaef2e32d2ed16bc7d6a728a8f12b7be9073441fd0d26713d52d61b4.ico">
+      <link rel="apple-touch-icon" href="/assets/apple-touch-icon-light-c9faf175fd32ff284ae4a1f7d8ee67188a6b39fe52e94ff77327a2066476f658.png">
+      <link rel="stylesheet" type="text/css" href="/assets/light-15f5469575d1be6619b36ea778855e184a7b76604827407328401d90698868be.css">
+    
+
+  
+
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-9MJQ3PQYHC"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-9MJQ3PQYHC');
+  </script>
+  
+
+  
+    <script async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+          inlineMath: [['$','$']]
+        }
+      });
+    </script>
+  
+
+</head>
+
+
+<body>
+    <main>
+        <div class="grid grid-centered">
+            <div class="grid-cell">
+                <nav class="header-nav scrollappear">
+  <a href="/" class="header-logo" title="wlwilliamx">wlwilliamx</a>
+  <ul class="header-links">
+    
+      <li>
+        <a href="/about" title="About me">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-about">
+  <use href="/assets/about-ecf154b571ab8034ae00aeed91a3b7ad68db80b46d958753ad6216c919486e88.svg#icon-about" xlink:href="/assets/about-ecf154b571ab8034ae00aeed91a3b7ad68db80b46d958753ad6216c919486e88.svg#icon-about"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+    
+      <li>
+        <a href="https://github.com/wlwilliamx" rel="noreferrer noopener" target="_blank" title="GitHub">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-github">
+  <use href="/assets/github-094f81040819f34343ee6ffff0980f17e2807b08b595eaaf66ae3554934fd78d.svg#icon-github" xlink:href="/assets/github-094f81040819f34343ee6ffff0980f17e2807b08b595eaaf66ae3554934fd78d.svg#icon-github"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      <li>
+        <a href="mailto:wlwilliamx@gmail.com" title="Email">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-email">
+  <use href="/assets/email-782473193bf750036fdb90e8daa075508a20509d01854c09f3237c144a3f0601.svg#icon-email" xlink:href="/assets/email-782473193bf750036fdb90e8daa075508a20509d01854c09f3237c144a3f0601.svg#icon-email"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+      <li>
+        <a href="/feed.xml" rel="noreferrer noopener" target="_blank" title="RSS">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon-rss">
+  <use href="/assets/rss-541ec5cea9cefd10d2fcfec01888f3f231a8829940249835fa7b7b3a12ae0d0d.svg#icon-rss" xlink:href="/assets/rss-541ec5cea9cefd10d2fcfec01888f3f231a8829940249835fa7b7b3a12ae0d0d.svg#icon-rss"></use>
+</svg>
+
+        </a>
+      </li>
+    
+    
+  </ul>
+</nav>
+
+
+  <ul class="header-tags scrollappear">
+    
+    
+      
+        <li><a href="/tag/go">Go</a></li>
+    
+      
+        <li><a href="/tag/linux">Linux</a></li>
+    
+      
+        <li><a href="/tag/内核">内核</a></li>
+    
+      
+        <li><a href="/tag/算法">算法</a></li>
+    
+  </ul>
+
+
+                <article class="article scrollappear">
+                    <header class="article-header">
+                        <h1>深入理解二分算法</h1>
+                        <p></p>
+                        <div class="article-list-footer">
+  <span class="article-list-date">
+    April 29, 2022
+  </span>
+  <span class="article-list-divider">-</span>
+  <span class="article-list-minutes">
+    
+    
+      4 minute read
+    
+  </span>
+  <span class="article-list-divider">-</span>
+  <div class="article-list-tags">
+    
+      
+      <a href="/tag/算法" title="See all posts with tag '算法'">算法</a>
+    
+  </div>
+</div>
+                    </header>
+
+                    <div class="article-content">
+                        <ul><li><a href="#二分的模板">二分的模板</a></li><li><a href="#二分的本质">二分的本质</a></li><li><a href="#总结">总结</a></li><li><a href="#练习题">练习题</a></li></ul>
+                        <p>二分这个算法，刚开始的时候看起来感觉很简单，但其实很多人都没有理解透二分的本质。</p>
+
+<p>我最开始学二分的时候，觉得这个挺简单的，很容易理解，但是在写代码的时候总是要考虑半天什么情况下 <code class="highlighter-rouge">l</code> 等于什么，什么情况下 <code class="highlighter-rouge">r</code> 等于什么，然后还总是 corner case 想不清楚。</p>
+
+<p>后来就看书系统性地学了一遍二分，看着书里的二分模板在那理解半天，绞尽脑汁地想为什么有的模板这里要是 <code class="highlighter-rouge">l = mid + 1</code>，为什么那里是 <code class="highlighter-rouge">r = mid</code>，为什么这个模板 while 循环里写的不是 <code class="highlighter-rouge">l &lt;= r</code>，然后也刷了很多二分的题，自以为弄懂了二分，但其实依旧没有看清楚二分的本质。</p>
+
+<p>其实我的关注点就错了，注意力全放在二分的模板上了，根本没有想清楚什么情况下能用二分以及怎么用二分，只是以为学会了二分的模板就会写二分的题了，导致后面有时候碰到二分的题，还是要考虑半天，还是要去看一下笔记里的二分模板，要套上模板才会写。</p>
+
+<p>直到后面，我真正系统性地又学了一遍二分，并且刷了大量二分的题，我才真正理解透了二分的本质。而下面，我会结合二分的题深入讲解二分的本质，带你们看清二分这个算法最核心的东西。</p>
+
+<h2 id="二分的模板">二分的模板</h2>
+
+<p>这里先给出两个二分模板，我见过一些不同的二分模板，但是这两个模板是我认为使用起来最方便也最容易理解二分本质的，它们出自 AcWing @yxc。这里需要说明一下，二分的不同模板只是实现，其本质才是关键，这里我会先解释下面的二分模板，然后再结合例子阐述二分的本质，与模板结合起来讲解会更容易掌握二分。</p>
+
+<p><strong>注意</strong>：<code class="highlighter-rouge">l, r</code> 是初始化成闭区间，即 <code class="highlighter-rouge">[l, r]</code>。循环结束的条件是 <code class="highlighter-rouge">l == r</code>，所以 <code class="highlighter-rouge">l, r</code> 都一样，都是最后的结果所在位置。</p>
+
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">while</span> <span class="p">(</span><span class="n">l</span> <span class="o">&lt;</span> <span class="n">r</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">mid</span> <span class="o">=</span> <span class="p">(</span><span class="n">l</span> <span class="o">+</span> <span class="n">r</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">check</span><span class="p">())</span> <span class="n">r</span> <span class="o">=</span> <span class="n">mid</span><span class="p">;</span>
+    <span class="k">else</span> <span class="n">l</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<blockquote>
+  <p>如果把 <code class="highlighter-rouge">check()</code> 替换成 <code class="highlighter-rouge">a[mid] &gt;= target</code>，则二分的结果是第一个大于等于 target 的数的位置。</p>
+</blockquote>
+
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">while</span> <span class="p">(</span><span class="n">l</span> <span class="o">&lt;</span> <span class="n">r</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">mid</span> <span class="o">=</span> <span class="p">(</span><span class="n">l</span> <span class="o">+</span> <span class="n">r</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">check</span><span class="p">())</span> <span class="n">l</span> <span class="o">=</span> <span class="n">mid</span><span class="p">;</span>
+    <span class="k">else</span> <span class="n">r</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<blockquote>
+  <p>如果把 <code class="highlighter-rouge">check()</code> 替换成 <code class="highlighter-rouge">a[mid] &lt;= target</code>，则二分的结果是最后一个小于等于 target 的数的位置。</p>
+</blockquote>
+
+<p>模板里的 <code class="highlighter-rouge">check()</code> 表示的是<strong>是否满足某种性质</strong>（后面二分的本质里会详细介绍），如果是查找普通的有序数组中的一个数 target，那么对于第一个模板，可以把性质定义为“大于等于 target”，然后用 <code class="highlighter-rouge">a[mid] &gt;= target</code> 替换掉 <code class="highlighter-rouge">check()</code>，则第一个模板可以查找到第一个大于等于 target 的数的位置。对于第二个模板，可以把性质定义为“小于等于 target”，然后用 <code class="highlighter-rouge">a[mid] &lt;= target</code> 替换掉 <code class="highlighter-rouge">check()</code>，则第二个模板可以查找到最后一个小于等于 target 的数的位置。</p>
+
+<p>讲完了最关键的 <code class="highlighter-rouge">check()</code>，接下来就开始讲 <code class="highlighter-rouge">l, r, mid</code> 的取值以及这样取值的用意。<code class="highlighter-rouge">l, r</code> 初始化成闭区间 <code class="highlighter-rouge">[l, r]</code> 是因为这样可以省去一些判断边界情况的麻烦，比较好处理边界情况，而对于你想要的答案不在数组内的情况，二分结束后直接判断即可 <code class="highlighter-rouge">if (a[l] != target)</code>。</p>
+
+<p><strong>对于第一个模板</strong>，缩小区间时 <code class="highlighter-rouge">r = mid</code>，是因为 <code class="highlighter-rouge">mid</code> 也满足性质，所以 <code class="highlighter-rouge">mid</code> 也有可能是答案，所以 <code class="highlighter-rouge">r</code> 可以等于 <code class="highlighter-rouge">mid</code>；而 <code class="highlighter-rouge">l = mid + 1</code>，是因为 <code class="highlighter-rouge">mid</code> 不满足条件，所以缩小的区间可以不用包括 <code class="highlighter-rouge">mid</code>，其次，当 <code class="highlighter-rouge">r - l = 1</code>，也就是只剩下两个元素的时候，如果 <code class="highlighter-rouge">l</code> 不加上 <code class="highlighter-rouge">+1</code>，那么有可能死循环（<code class="highlighter-rouge">mid == l</code>）。</p>
+
+<p>当数组中存在相同的元素时也不用担心，因为 <code class="highlighter-rouge">check()</code> 那里写着 <code class="highlighter-rouge">a[mid] &gt;= target</code>，有等于的情况，而 <code class="highlighter-rouge">mid = (l + r) &gt;&gt; 1</code> 相当于是二分之 <code class="highlighter-rouge">(l + r)</code> 向下取整，所以 <code class="highlighter-rouge">mid</code> 会偏向于往左取值，所以只要满足性质，<code class="highlighter-rouge">r = mid</code> 会自动向左逼近。</p>
+
+<p><strong>对于第二个模板</strong>同理，<code class="highlighter-rouge">mid = (l + r + 1) &gt;&gt; 1</code> 相当于是二分之 <code class="highlighter-rouge">(l + r)</code> 向上取整，所以 <code class="highlighter-rouge">mid</code> 会偏向于往右取值，当满足性质的时候，<code class="highlighter-rouge">l = mid</code> 会自动向右逼近；不满足性质时，<code class="highlighter-rouge">r = mid</code> 还要再 <code class="highlighter-rouge">+1</code>。</p>
+
+<h2 id="二分的本质">二分的本质</h2>
+
+<p><strong>二分真正的本质</strong>是：对于一个初始区间来说，如果存在某种<strong>性质</strong>，可以使得这个区间<strong>一分为二</strong>，其中一个区间满足这个性质，另一个区间不满足这个性质。这个时候就可以使用二分，来找到满足这个性质的区间的<strong>边界</strong>。</p>
+
+<p>比如 <a href="https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/">LeetCode 34. 在排序数组中查找元素的第一个和最后一个位置</a> 这题。</p>
+
+<ul>
+  <li>(1) 首先看查找元素的第一个位置。</li>
+</ul>
+
+<p><a href="/assets/documentation/IMG_B280FA382D8E-1@2x 2022-04-30 21.06.14-e0e3f4d9643a5b1fc0f42128c6317baf49081c3c8200af00cfc30df40b4c0efa.jpg">
+  <img src="/assets/documentation/IMG_B280FA382D8E-1 2022-04-30 21.06.14-e0e3f4d9643a5b1fc0f42128c6317baf49081c3c8200af00cfc30df40b4c0efa.jpg" alt="IMG_B280FA382D8E-1" class="zooming" data-rjs="/assets/documentation/IMG_B280FA382D8E-1@2x 2022-04-30 21.06.14-e0e3f4d9643a5b1fc0f42128c6317baf49081c3c8200af00cfc30df40b4c0efa.jpg" data-zooming-width="" data-zooming-height="" />
+</a></p>
+
+<p>首先定义性质为“大于等于 target 的数”（后面会解释为什么这么定义），可以把区间一分为二，右边蓝色的区间满足这个性质，而另一边不满足这个性质，所以可以用二分找到满足性质的蓝色区间的边界（这就是二分的作用），即图上标记的地方。</p>
+
+<p>这个边界就是第一个满足“大于等于 target”的位置，如果这个边界位置的元素不等于 target，那么说明数组中不存在 target；如果这个边界位置的元素等于 target，那么这就是我们要找的 target 的第一个位置。</p>
+
+<p>这也就是为什么性质的定义里要有等于 target，因为我们这就是我们要查找的。而为什么定义大于 target，因为这样定义才能把区间一分为二，最后求得<strong>满足性质的区间</strong>的边界。那不能定义成“小于等于 target”吗？不能，因为定义成这个，求到的边界就应该是小于等于 target 的区间的边界，而这也就是用来求我们第二个问题的：</p>
+
+<ul>
+  <li>(2) 查找元素的最后一个位置。</li>
+</ul>
+
+<p><a href="/assets/documentation/IMG_69EAB84E6ECE-1@2x 2022-04-30 21.06.10-c71a76557d98a6d0c77f7a15320da757d4de35c43216dde742f1fddb6db42129.jpg">
+  <img src="/assets/documentation/IMG_69EAB84E6ECE-1 2022-04-30 21.06.10-c71a76557d98a6d0c77f7a15320da757d4de35c43216dde742f1fddb6db42129.jpg" alt="IMG_69EAB84E6ECE-1" class="zooming" data-rjs="/assets/documentation/IMG_69EAB84E6ECE-1@2x 2022-04-30 21.06.10-c71a76557d98a6d0c77f7a15320da757d4de35c43216dde742f1fddb6db42129.jpg" data-zooming-width="" data-zooming-height="" />
+</a></p>
+
+<p>这里定义性质为“小于等于 target 的数”，同样可以把区间一分为二，左边蓝色的区间满足这个性质，最后二分求得的边界就会是这个蓝色区间的边界，而另一边是不满足这个性质的。边界的位置是小于等于 target 的最后一个位置，然后我们判断一下边界位置的元素是否等于 target，等于的话，则就是我们要找到的位置。</p>
+
+<hr />
+
+<p>我们再来看一个题 <a href="https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array/">LeetCode 153. 寻找旋转排序数组中的最小值</a>。</p>
+
+<p>这个题让我们求最小值，但是数组在旋转之后可能会产生一段大一点的有序区间，一段小一点的有序区间，也就是一大一小两个区间，这个能直接套二分吗？等等，一大一小两个区间，然后要求小区间的最小值（边界），这不就是二分的本质作用吗。</p>
+
+<p>我们首先定义性质为：小于等于“数组末尾那个数”的数，则可以将初始区间一分为二，如图所示。</p>
+
+<p><a href="/assets/documentation/IMG_A6142F48A6E2-1@2x 2022-04-30 21.06.02-bd5109a5cfe0280aa6bf59bd5f2a2351f55d3ea148e00b84ddc683e4657a8a5e.jpg">
+  <img src="/assets/documentation/IMG_A6142F48A6E2-1 2022-04-30 21.06.02-bd5109a5cfe0280aa6bf59bd5f2a2351f55d3ea148e00b84ddc683e4657a8a5e.jpg" alt="IMG_A6142F48A6E2-1" class="zooming" data-rjs="/assets/documentation/IMG_A6142F48A6E2-1@2x 2022-04-30 21.06.02-bd5109a5cfe0280aa6bf59bd5f2a2351f55d3ea148e00b84ddc683e4657a8a5e.jpg" data-zooming-width="" data-zooming-height="" />
+</a></p>
+
+<p>蓝色的区间就是满足性质的区间，这个区间的边界也就是我们要求的答案。使用第一个模板即可求得这个满足性质的区间的边界。代码如下：</p>
+
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="kt">int</span> <span class="n">l</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="n">a</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+<span class="k">while</span> <span class="p">(</span><span class="n">l</span> <span class="o">&lt;</span> <span class="n">r</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kt">int</span> <span class="n">mid</span> <span class="o">=</span> <span class="p">(</span><span class="n">l</span> <span class="o">+</span> <span class="n">r</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">;</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">a</span><span class="p">[</span><span class="n">r</span><span class="p">])</span> <span class="n">r</span> <span class="o">=</span> <span class="n">mid</span><span class="p">;</span>
+	<span class="k">else</span> <span class="n">l</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="k">return</span> <span class="n">a</span><span class="p">[</span><span class="n">l</span><span class="p">];</span></code></pre></figure>
+
+<p>有些人可能会认为二分的本质是单调性，其实并不是。我们可以发现这道题的区间是不满足单调性的，但是也可以使用二分。二分的本质其实并不是单调性，只是说存在单调性的话，那么可以采用二分；如果不存在单调性的话，但是可以根据某个性质，将区间一分为二，那么就可以采用二分。普通的在一个有序区间内使用二分查找只是二分的一种应用，<strong>根据性质划分区间，然后用二分寻找区间的边界才是二分真正的用法</strong>。</p>
+
+<hr />
+
+<p>最后再来看一道题加深对二分本质的理解：<a href="https://leetcode-cn.com/problems/minimum-number-of-days-to-make-m-bouquets/">LeetCode 1482. 制作 m 束花所需的最少天数</a>。</p>
+
+<p>这题可能有些人很容易想错，看到是求最少天数，也就是求最优值，直接开始 DP，而且给出来的数组是完全无序的，看不出来哪里能二分。但其实想清楚了二分的本质之后，就知道这题就应该用二分。二分和数组以及单调性并没有直接的关系，<strong>和二分有直接关系的是问题的解的所在区间</strong>。</p>
+
+<p>对于制作 m 束花所需要的天数，只要花的数量够，那么天数多一点，就肯定可以制作 m 束花；如果天数少了，就不能制作 m 束花，这不正好把所有天数划分成两个区间了吗，然后要求的“制作 m 束花所需的最少天数”正好就是“所有可以制作 m 束花的天数的区间”的边界。嗯，那这个正好就是二分所擅长的事。</p>
+
+<p><a href="/assets/documentation/IMG_3EB34DA03CEE-1@2x 2022-04-30 21.05.55-911312f218e9faed4557d3ca4dd3b86575a3ee057d11552c8cf4eb24d559dede.jpg">
+  <img src="/assets/documentation/IMG_3EB34DA03CEE-1 2022-04-30 21.05.55-911312f218e9faed4557d3ca4dd3b86575a3ee057d11552c8cf4eb24d559dede.jpg" alt="IMG_3EB34DA03CEE-1" class="zooming" data-rjs="/assets/documentation/IMG_3EB34DA03CEE-1@2x 2022-04-30 21.05.55-911312f218e9faed4557d3ca4dd3b86575a3ee057d11552c8cf4eb24d559dede.jpg" data-zooming-width="" data-zooming-height="" />
+</a></p>
+
+<p>由于边界在左边，所以我们采用能向左逼近求边界的第一个模板。然后由于性质是“可以制作 m 束花”，显然这个没法直接写在二分的 <code class="highlighter-rouge">if</code> 判断里，这就需要实现一个 <code class="highlighter-rouge">check()</code> 函数去检查当前二分的 <code class="highlighter-rouge">mid</code> 是否满足性质。</p>
+
+<figure class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="k">if</span> <span class="p">(</span><span class="n">m</span> <span class="o">&gt;</span> <span class="n">bloomDay</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">/</span> <span class="n">k</span><span class="p">)</span> <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">l</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="mf">1e9</span> <span class="o">+</span> <span class="mi">10</span><span class="p">;</span>
+<span class="k">while</span> <span class="p">(</span><span class="n">l</span> <span class="o">&lt;</span> <span class="n">r</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kt">int</span> <span class="n">mid</span> <span class="o">=</span> <span class="p">(</span><span class="n">l</span> <span class="o">+</span> <span class="n">r</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">;</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">check</span><span class="p">(</span><span class="n">bloomDay</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">mid</span><span class="p">))</span> <span class="n">r</span> <span class="o">=</span> <span class="n">mid</span><span class="p">;</span>
+	<span class="k">else</span> <span class="n">l</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="k">return</span> <span class="n">l</span><span class="p">;</span></code></pre></figure>
+
+<p>这种类型的题也被称为二分答案，但本质都是一样的，不论是二分查找还是二分答案，都是关注<strong>问题的解的所在区间能否根据某个性质一分为二</strong>，然后采用二分即可求得边界（解）。</p>
+
+<h2 id="总结">总结</h2>
+
+<p>前面的内容主要深入讲解了理解二分的本质以及怎么使用二分求解，但是碰到一个问题该如何判断能不能用二分来求解。这里，我来做一个二分整体的总结：</p>
+
+<ol>
+  <li>首先看问题的解的所在区间能否根据某个性质一分为二，如果能，则可以使用二分。</li>
+  <li>实现这个性质（<code class="highlighter-rouge">check()</code>）。</li>
+  <li>如果边界在区间的左边，则使用第一个模板：向左逼近求边界。</li>
+  <li>如果边界在区间的右边，则使用第二个模板：向右逼近求边界。</li>
+</ol>
+
+<h2 id="练习题">练习题</h2>
+
+<p>下面是一些二分的基础算法题。如果没有彻底掌握二分的话，一定要多刷一些题来加深自己对二分的理解。如果做完某道题的时候觉得还不熟练，那么就删掉代码多做几次，重复思考的过程会让自己有更深的理解。</p>
+
+<p><a href="https://leetcode-cn.com/problems/search-insert-position/">LeetCode 35. 搜索插入位置</a></p>
+
+<p><a href="https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/">LeetCode 34. 在排序数组中查找元素的第一个和最后一个位置</a></p>
+
+<p><a href="https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array/">LeetCode 153. 寻找旋转排序数组中的最小值</a></p>
+
+<p><a href="https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array-ii/">LeetCode 154. 寻找旋转排序数组中的最小值 II</a></p>
+
+<p><a href="https://leetcode-cn.com/problems/search-in-rotated-sorted-array/">LeetCode 33. 搜索旋转排序数组</a></p>
+
+<p><a href="https://leetcode-cn.com/problems/search-in-rotated-sorted-array-ii/">LeetCode 81. 搜索旋转排序数组 II</a></p>
+
+<p><a href="https://leetcode-cn.com/problems/sqrtx/">LeetCode 69. x 的平方根 </a>（浮点数二分）</p>
+
+<p><a href="https://leetcode-cn.com/problems/capacity-to-ship-packages-within-d-days/">LeetCode 1011. 在 D 天内送达包裹的能力</a>（二分答案）</p>
+
+<p><a href="https://leetcode-cn.com/problems/minimum-number-of-days-to-make-m-bouquets/">LeetCode 1482. 制作 m 束花所需的最少天数</a>（二分答案）</p>
+
+<p><a href="https://www.luogu.com.cn/training/111#problems">洛谷的官方二分题单 【算法1-6】二分查找与二分答案</a></p>
+
+
+                    </div>
+                    <div class="article-share">
+                        
+                        
+                        <a href="https://twitter.com/home?status=%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E4%BA%8C%E5%88%86%E7%AE%97%E6%B3%95%20-%20https://wlwilliamx.github.io/posts/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E4%BA%8C%E5%88%86%E7%AE%97%E6%B3%95"
+                            title="Share on Twitter" rel="noreferrer noopener" target="_blank">
+                            <svg viewBox="0 0 512 512">
+                                <path
+                                    d="M492 109.5c-17.4 7.7-36 12.9-55.6 15.3 20-12 35.4-31 42.6-53.6 -18.7 11.1-39.4 19.2-61.5 23.5C399.8 75.8 374.6 64 346.8 64c-53.5 0-96.8 43.4-96.8 96.9 0 7.6 0.8 15 2.5 22.1 -80.5-4-151.9-42.6-199.6-101.3 -8.3 14.3-13.1 31-13.1 48.7 0 33.6 17.2 63.3 43.2 80.7C67 210.7 52 206.3 39 199c0 0.4 0 0.8 0 1.2 0 47 33.4 86.1 77.7 95 -8.1 2.2-16.7 3.4-25.5 3.4 -6.2 0-12.3-0.6-18.2-1.8 12.3 38.5 48.1 66.5 90.5 67.3 -33.1 26-74.9 41.5-120.3 41.5 -7.8 0-15.5-0.5-23.1-1.4C62.8 432 113.7 448 168.3 448 346.6 448 444 300.3 444 172.2c0-4.2-0.1-8.4-0.3-12.5C462.6 146 479 129 492 109.5z" />
+                            </svg>
+                        </a>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=https://wlwilliamx.github.io/posts/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E4%BA%8C%E5%88%86%E7%AE%97%E6%B3%95"
+                            title="Share on Facebook" rel="noreferrer noopener" target="_blank">
+                            <svg viewBox="0 0 512 512">
+                                <path
+                                    d="M288 192v-38.1c0-17.2 3.8-25.9 30.5-25.9H352V64h-55.9c-68.5 0-91.1 31.4-91.1 85.3V192h-45v64h45v192h83V256h56.4l7.6-64H288z" />
+                            </svg>
+                        </a>
+                    </div>
+
+                    
+                    <div id="disqus_thread" class="article-comments"></div>
+                    <script src="https://https-wlwilliamx-github-io.disqus.com/embed.js" async defer></script>
+                    <noscript>Please enable JavaScript to view the comments.</noscript>
+                    
+                </article>
+                <footer class="footer scrollappear">
+    <p>
+        <!-- Chalk is a high quality, completely customizable, performant and 100% free
+    blog template for Jekyll built by
+    <a href="/about" title="About me">Nielsen Ramon</a>. Download it <a href="https://github.com/nielsenramon/chalk" rel="noreferrer noopener" target="_blank" title="Download Chalk">here</a>. -->
+        Do what you love.
+    </p>
+</footer>
+            </div>
+        </div>
+    </main>
+    <script src="/assets/vendor-734ddaa553ebf4e6ca703bd7c567ef4a0e43b0ba799607355e56b81e88781318.js" type="text/javascript"></script>
+
+
+<script src="/assets/webfonts-96493456d319d1bf419afdf8701552d4d486fee6afd304897d4fd81eb4e0cc0b.js" type="text/javascript"></script>
+
+
+
+<script src="/assets/scrollappear-e2da8ea567e418637e31266cc5302126eaa79f62a2273739086358b589a89ee6.js" type="text/javascript"></script>
+
+
+<script src="/assets/application-cfde13ac81ddaf4351b2e739603e2baf688d0fcc9aba613fe62bbb1c7b037fb9.js" type="text/javascript"></script>
+
+
+</body>
+
+</html>
