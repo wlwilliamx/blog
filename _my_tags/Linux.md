@@ -1,4 +1,4 @@
 ---
-slug: Linux
+slug: linux
 name: Linux
 ---
